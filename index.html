@@ -219,8 +219,24 @@
     .corner {
       grid-column:2;
       grid-row:2;
-      background:var(--navy);color:#fff;font-size:9px;font-weight:900;line-height:1.2;
+      position:relative;
+      overflow:hidden;
+      background:var(--bills-blue);
+      color:#fff;
+      font-size:9px;
+      font-weight:900;
+      line-height:1.2;
       padding:5px;
+      isolation:isolate;
+    }
+
+    .corner::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:var(--opponent-color, var(--bills-red));
+      clip-path:polygon(0 0, 0 100%, 100% 100%);
+      z-index:-1;
     }
     .col-head {
       grid-row:2;
@@ -674,7 +690,8 @@
       corner.className = "corner";
       corner.innerHTML = game && game.bye ? "BYE" : "SCORE";
       if (game && !game.bye) {
-        corner.style.background = `linear-gradient(135deg, ${opponentColor} 0 48%, var(--bills-blue) 48% 100%)`;
+        corner.style.setProperty("--opponent-color", opponentColor);
+        corner.style.background = "var(--bills-blue)";
       } else {
         corner.style.background = "var(--navy)";
       }
