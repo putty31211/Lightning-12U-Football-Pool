@@ -172,11 +172,11 @@
     .board {
       --cell:64px;
       display:grid;
-      grid-template-columns:42px 72px repeat(10,var(--cell));
-      grid-template-rows:38px 42px repeat(10,var(--cell));
+      grid-template-columns:42px 72px repeat(10, minmax(var(--cell), var(--cell)));
+      grid-template-rows:38px 42px repeat(10, var(--cell));
       width:max-content;
-      min-width:100%;
-      justify-content:center;
+      min-width:0;
+      justify-content:start;
     }
     .team-label-top {
       grid-column:3 / span 10;
@@ -215,6 +215,14 @@
     .corner,.col-head,.row-head,.square {
       border-right:1px solid #cfd9e7;border-bottom:1px solid #cfd9e7;
       display:grid;place-items:center;text-align:center;
+      min-width:0;
+    }
+
+    .col-head,
+    .square {
+      width:var(--cell);
+      min-width:var(--cell);
+      max-width:var(--cell);
     }
     .corner {
       grid-column:2;
