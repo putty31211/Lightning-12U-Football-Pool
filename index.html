@@ -485,7 +485,7 @@
           <p class="subtitle">Season-long football squares with a little softball swagger.</p>
         </div>
       </div>
-      <div class="season-pill">2026 SEASON • 17 WEEKS • LIGHTNING 12U</div>
+      <div class="season-pill">2026 SEASON • 17 PAYOUT WEEKS • LIGHTNING 12U</div>
     </div>
   </header>
 
@@ -526,9 +526,9 @@
       <aside class="side">
         <div class="card side-card">
           <h3>Weekly Payouts</h3>
-          <div class="payout-row"><span>Halftime</span><strong>$100</strong></div>
-          <div class="payout-row"><span>Final</span><strong>$200</strong></div>
-          <div class="payout-row"><span>Total / Week</span><strong>$300</strong></div>
+          <div class="payout-row"><span>Halftime</span><strong id="halftimePayout">$100</strong></div>
+          <div class="payout-row"><span>Final</span><strong id="finalPayout">$200</strong></div>
+          <div class="payout-row"><span>Total / Week</span><strong id="weeklyPayout">$300</strong></div>
         </div>
 
         <div class="card side-card">
@@ -549,7 +549,7 @@
             Choose the girl who sold you your square to highlight her entries.
             Tap any square to see that square's Bills and opponent numbers for the full season.
             Bills numbers are always across the top and opponent numbers run down the left.
-            Weekly payouts are $100 at halftime and $200 for the final score.
+            Each listed week pays $100 at halftime and $200 for the final score.
           </p>
         </div>
       </aside>
@@ -579,16 +579,15 @@
     // Week 1 begins Monday, September 7, 2026.
     // Each new pool week starts on Monday.
     const POOL_WEEK_1_START = new Date(2026, 8, 7); // month is zero-based
-    const TOTAL_WEEKS = 17;
+    const TOTAL_WEEKS = 18;
 
     const BILLS_SCHEDULE = [
       { week: 1,  label: "@ Texans", opponent: "Houston Texans", away: true,  color: "#03202F" },
       { week: 2,  label: "vs Lions", opponent: "Detroit Lions", away: false, color: "#0076B6" },
       { week: 3,  label: "vs Chargers", opponent: "Los Angeles Chargers", away: false, color: "#0080C6" },
       { week: 4,  label: "vs Patriots", opponent: "New England Patriots", away: false, color: "#002244" },
-      { week: 5,  label: "@ Rams", opponent: "Los Angeles Rams", away: true, color: "#003594" },
+      { week: 5,  label: "@ Rams", opponent: "Los Angeles Rams", away: true, color: "#FFD100" },
       { week: 6,  label: "@ Raiders", opponent: "Las Vegas Raiders", away: true, color: "#000000" },
-      { week: 7,  label: "BYE", opponent: "Bye Week", bye: true, color: "#6e7b91" },
       { week: 8,  label: "vs Ravens", opponent: "Baltimore Ravens", away: false, color: "#241773" },
       { week: 9,  label: "@ Vikings", opponent: "Minnesota Vikings", away: true, color: "#4F2683" },
       { week: 10, label: "@ Jets", opponent: "New York Jets", away: true, color: "#125740" },
@@ -598,10 +597,11 @@
       { week: 14, label: "@ Packers", opponent: "Green Bay Packers", away: true, color: "#203731" },
       { week: 15, label: "vs Bears", opponent: "Chicago Bears", away: false, color: "#0B162A" },
       { week: 16, label: "@ Broncos", opponent: "Denver Broncos", away: true, color: "#FB4F14" },
-      { week: 17, label: "@ Dolphins", opponent: "Miami Dolphins", away: true, color: "#008E97" }
+      { week: 17, label: "@ Dolphins", opponent: "Miami Dolphins", away: true, color: "#008E97" },
+      { week: 18, label: "vs Jets", opponent: "New York Jets", away: false, color: "#125740" }
     ];
 
-    const WEEKLY_NUMBERS = [{"week": 1, "bills": [5, 6, 1, 9, 2, 8, 0, 4, 7, 3], "opponent": [8, 3, 0, 1, 4, 7, 9, 5, 2, 6]}, {"week": 2, "bills": [5, 1, 4, 2, 0, 9, 8, 7, 3, 6], "opponent": [3, 0, 4, 8, 1, 2, 7, 9, 6, 5]}, {"week": 3, "bills": [7, 2, 0, 1, 9, 4, 3, 6, 5, 8], "opponent": [0, 2, 1, 6, 5, 9, 8, 4, 7, 3]}, {"week": 4, "bills": [0, 7, 3, 1, 2, 9, 4, 6, 5, 8], "opponent": [4, 7, 1, 3, 2, 8, 0, 9, 5, 6]}, {"week": 5, "bills": [1, 6, 4, 3, 9, 2, 5, 0, 8, 7], "opponent": [3, 4, 9, 8, 2, 1, 6, 5, 0, 7]}, {"week": 6, "bills": [3, 2, 4, 1, 5, 9, 0, 6, 8, 7], "opponent": [6, 2, 9, 3, 7, 0, 8, 1, 5, 4]}, {"week": 7, "bills": [6, 5, 9, 2, 1, 0, 8, 4, 3, 7], "opponent": [3, 7, 4, 1, 8, 9, 2, 6, 5, 0]}, {"week": 8, "bills": [3, 7, 8, 1, 0, 5, 9, 6, 4, 2], "opponent": [5, 8, 0, 2, 9, 4, 7, 1, 3, 6]}, {"week": 9, "bills": [2, 1, 6, 4, 3, 5, 0, 7, 8, 9], "opponent": [2, 6, 4, 0, 7, 1, 8, 9, 3, 5]}, {"week": 10, "bills": [9, 5, 8, 3, 7, 4, 1, 0, 2, 6], "opponent": [2, 4, 0, 5, 7, 1, 8, 9, 6, 3]}, {"week": 11, "bills": [2, 7, 3, 9, 0, 1, 8, 6, 4, 5], "opponent": [9, 0, 4, 2, 1, 8, 6, 3, 5, 7]}, {"week": 12, "bills": [2, 8, 1, 0, 4, 6, 3, 9, 5, 7], "opponent": [9, 2, 0, 5, 3, 8, 6, 1, 4, 7]}, {"week": 13, "bills": [2, 8, 4, 3, 0, 5, 6, 1, 9, 7], "opponent": [1, 4, 0, 7, 6, 2, 8, 3, 5, 9]}, {"week": 14, "bills": [9, 8, 4, 1, 6, 5, 3, 2, 7, 0], "opponent": [7, 5, 2, 1, 4, 9, 0, 6, 3, 8]}, {"week": 15, "bills": [5, 6, 4, 8, 3, 0, 9, 7, 2, 1], "opponent": [4, 1, 0, 6, 2, 8, 5, 7, 3, 9]}, {"week": 16, "bills": [8, 9, 5, 2, 6, 0, 1, 7, 4, 3], "opponent": [1, 9, 6, 3, 2, 4, 8, 7, 5, 0]}, {"week": 17, "bills": [9, 1, 6, 3, 4, 8, 7, 5, 2, 0], "opponent": [5, 0, 4, 7, 2, 1, 8, 6, 9, 3]}];
+    const WEEKLY_NUMBERS = [{"week": 1, "bills": [5, 6, 1, 9, 2, 8, 0, 4, 7, 3], "opponent": [8, 3, 0, 1, 4, 7, 9, 5, 2, 6]}, {"week": 2, "bills": [5, 1, 4, 2, 0, 9, 8, 7, 3, 6], "opponent": [3, 0, 4, 8, 1, 2, 7, 9, 6, 5]}, {"week": 3, "bills": [7, 2, 0, 1, 9, 4, 3, 6, 5, 8], "opponent": [0, 2, 1, 6, 5, 9, 8, 4, 7, 3]}, {"week": 4, "bills": [0, 7, 3, 1, 2, 9, 4, 6, 5, 8], "opponent": [4, 7, 1, 3, 2, 8, 0, 9, 5, 6]}, {"week": 5, "bills": [1, 6, 4, 3, 9, 2, 5, 0, 8, 7], "opponent": [3, 4, 9, 8, 2, 1, 6, 5, 0, 7]}, {"week": 6, "bills": [3, 2, 4, 1, 5, 9, 0, 6, 8, 7], "opponent": [6, 2, 9, 3, 7, 0, 8, 1, 5, 4]}, {"week": 8, "bills": [3, 7, 8, 1, 0, 5, 9, 6, 4, 2], "opponent": [5, 8, 0, 2, 9, 4, 7, 1, 3, 6]}, {"week": 9, "bills": [2, 1, 6, 4, 3, 5, 0, 7, 8, 9], "opponent": [2, 6, 4, 0, 7, 1, 8, 9, 3, 5]}, {"week": 10, "bills": [9, 5, 8, 3, 7, 4, 1, 0, 2, 6], "opponent": [2, 4, 0, 5, 7, 1, 8, 9, 6, 3]}, {"week": 11, "bills": [2, 7, 3, 9, 0, 1, 8, 6, 4, 5], "opponent": [9, 0, 4, 2, 1, 8, 6, 3, 5, 7]}, {"week": 12, "bills": [2, 8, 1, 0, 4, 6, 3, 9, 5, 7], "opponent": [9, 2, 0, 5, 3, 8, 6, 1, 4, 7]}, {"week": 13, "bills": [2, 8, 4, 3, 0, 5, 6, 1, 9, 7], "opponent": [1, 4, 0, 7, 6, 2, 8, 3, 5, 9]}, {"week": 14, "bills": [9, 8, 4, 1, 6, 5, 3, 2, 7, 0], "opponent": [7, 5, 2, 1, 4, 9, 0, 6, 3, 8]}, {"week": 15, "bills": [5, 6, 4, 8, 3, 0, 9, 7, 2, 1], "opponent": [4, 1, 0, 6, 2, 8, 5, 7, 3, 9]}, {"week": 16, "bills": [8, 9, 5, 2, 6, 0, 1, 7, 4, 3], "opponent": [1, 9, 6, 3, 2, 4, 8, 7, 5, 0]}, {"week": 17, "bills": [9, 1, 6, 3, 4, 8, 7, 5, 2, 0], "opponent": [5, 0, 4, 7, 2, 1, 8, 6, 9, 3]}, {"week": 18, "bills": [3, 2, 1, 4, 6, 7, 5, 0, 9, 8], "opponent": [7, 0, 4, 1, 3, 8, 6, 5, 2, 9]}];
 
     const weekSelect = document.getElementById("weekSelect");
     const boardTitle = document.getElementById("boardTitle");
@@ -628,7 +628,8 @@
       const daysSinceStart = Math.floor((today - start) / 86400000);
       const calculatedWeek = Math.floor(daysSinceStart / 7) + 1;
 
-      return Math.min(TOTAL_WEEKS, Math.max(1, calculatedWeek));
+      const boundedWeek = Math.min(TOTAL_WEEKS, Math.max(1, calculatedWeek));
+      return boundedWeek === 7 ? 8 : boundedWeek;
     }
 
     function updateWeekDisplay() {
@@ -636,17 +637,21 @@
       const currentWeek = getCurrentPoolWeek();
       const game = BILLS_SCHEDULE.find(g => g.week === selectedWeek);
 
-      if (game.bye) {
-        boardTitle.textContent = `Week ${selectedWeek} — BYE`;
-      } else {
-        boardTitle.textContent = `Week ${selectedWeek} — Bills ${game.label}`;
-      }
+      boardTitle.textContent = `Week ${selectedWeek} — Bills ${game.label}`;
 
       if (selectedWeek === currentWeek) {
         weekStatus.textContent = "Current week";
       } else {
         weekStatus.textContent = `Viewing Week ${selectedWeek}`;
       }
+
+      const halftimePayout = document.getElementById("halftimePayout");
+      const finalPayout = document.getElementById("finalPayout");
+      const weeklyPayout = document.getElementById("weeklyPayout");
+
+      halftimePayout.textContent = "$100";
+      finalPayout.textContent = "$200";
+      weeklyPayout.textContent = "$300";
 
       renderBoardNumbers(selectedWeek);
 
@@ -675,33 +680,27 @@
 
       const billsLabel = document.createElement("div");
       billsLabel.className = "team-label-top";
-      billsLabel.textContent = game && game.bye ? "BILLS — BYE" : "BILLS";
+      billsLabel.textContent = "BILLS";
       board.appendChild(billsLabel);
 
       const opponentLabel = document.createElement("div");
       opponentLabel.className = "opponent-label";
       opponentLabel.style.color = opponentColor;
-      opponentLabel.textContent = game && game.bye
-        ? "BYE"
-        : game.opponent.replace(/^(Houston|Detroit|Los Angeles|New England|Las Vegas|Baltimore|Minnesota|New York|Miami|Kansas City|Green Bay|Chicago|Denver)\s+/, "");
+      opponentLabel.textContent = game.opponent.replace(/^(Houston|Detroit|Los Angeles|New England|Las Vegas|Baltimore|Minnesota|New York|Miami|Kansas City|Green Bay|Chicago|Denver)\s+/, "");
       board.appendChild(opponentLabel);
 
       const corner = document.createElement("div");
       corner.className = "corner";
-      corner.innerHTML = game && game.bye ? "BYE" : "SCORE";
-      if (game && !game.bye) {
-        corner.style.setProperty("--opponent-color", opponentColor);
-        corner.style.background = "var(--bills-blue)";
-      } else {
-        corner.style.background = "var(--navy)";
-      }
+      corner.innerHTML = "SCORE";
+      corner.style.setProperty("--opponent-color", opponentColor);
+      corner.style.background = "var(--bills-blue)";
       board.appendChild(corner);
 
       for (let i = 0; i < 10; i++) {
         const el = document.createElement("div");
         el.className = "col-head";
         el.style.gridColumn = String(i + 3);
-        el.textContent = game && game.bye ? "" : nums.bills[i];
+        el.textContent = nums.bills[i];
         board.appendChild(el);
       }
 
@@ -711,7 +710,7 @@
         rowHead.style.gridRow = String(row + 3);
         rowHead.style.background = opponentColor;
         rowHead.style.color = "#ffffff";
-        rowHead.textContent = game && game.bye ? "" : nums.opponent[row];
+        rowHead.textContent = nums.opponent[row];
         board.appendChild(rowHead);
 
         for (let col = 0; col < 10; col++) {
@@ -732,12 +731,8 @@
           const displayName = a.seller === "TEAM" ? "TEAM" : a.buyer;
           square.innerHTML = `<span class="num">#${index + 1}</span>${displayName}`;
 
-          if (game && !game.bye) {
-            square.title =
-              `Square #${index + 1} • ${a.seller} • ${a.buyer} • Bills ${nums.bills[col]} / ${game.opponent} ${nums.opponent[row]}`;
-          } else {
-            square.title = `Square #${index + 1} • ${a.seller} • ${a.buyer}`;
-          }
+          square.title =
+            `Square #${index + 1} • ${a.seller} • ${a.buyer} • Bills ${nums.bills[col]} / ${game.opponent} ${nums.opponent[row]}`;
 
           square.addEventListener("click", () => openSquareModal(square));
           board.appendChild(square);
@@ -766,19 +761,6 @@
       seasonGrid.innerHTML = BILLS_SCHEDULE.map(game => {
         const numbers = WEEKLY_NUMBERS.find(w => w.week === game.week);
         const isCurrent = game.week === currentWeek;
-
-        if (game.bye) {
-          return `
-            <div class="week-card ${isCurrent ? "current" : ""}">
-              <div class="week-num">WK ${game.week}</div>
-              <div class="week-matchup">
-                <strong>BYE</strong>
-                <span>No game this week</span>
-              </div>
-              <div class="bye-label">—</div>
-            </div>
-          `;
-        }
 
         const billsNumber = numbers.bills[col];
         const opponentNumber = numbers.opponent[row];
