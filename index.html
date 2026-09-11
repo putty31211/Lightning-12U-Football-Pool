@@ -29,8 +29,19 @@
     .top-stripe { height:6px;background:linear-gradient(90deg,var(--bills-blue) 0 58%,var(--bills-red) 58% 100%); }
     .hero {
       position:relative;overflow:hidden;
-      background:linear-gradient(125deg,rgba(0,51,141,.98),rgba(3,31,81,.98));
+      background:
+        radial-gradient(circle at 14% 24%, rgba(255,255,255,.08), transparent 13rem),
+        linear-gradient(125deg, rgba(0,51,141,.98), rgba(3,31,81,.98));
       color:#fff;padding:30px clamp(18px,5vw,56px) 28px;border-bottom:5px solid var(--bills-red);
+    }
+    .hero::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 82% 28%, rgba(255,255,255,.08), transparent 11rem),
+        linear-gradient(115deg, transparent 0 74%, rgba(198,12,48,.20) 74% 78%, transparent 78% 100%);
+      pointer-events:none;
     }
     .hero::after {
       content:"";position:absolute;width:420px;height:420px;right:-120px;top:-190px;
@@ -42,13 +53,90 @@
     }
     .brand { display:flex;align-items:center;gap:16px; }
     .mark {
-      width:66px;height:66px;border-radius:18px;display:grid;place-items:center;
-      background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.18);color:var(--bills-blue);
-      font-size:34px;transform:rotate(-3deg);
+      width:116px;
+      height:82px;
+      border-radius:18px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.96);
+      box-shadow:0 8px 22px rgba(0,0,0,.18);
+      transform:rotate(-2deg);
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.7);
+      padding:7px 9px;
     }
+
+    .mark::before,
+    .mark::after {
+      content:"";
+      position:absolute;
+      border:2px solid rgba(198,12,48,.22);
+      border-radius:50%;
+      pointer-events:none;
+    }
+
+    .mark::before {
+      width:132px;
+      height:132px;
+      left:-86px;
+      top:10px;
+      border-right-color:transparent;
+      border-bottom-color:transparent;
+      transform:rotate(-14deg);
+    }
+
+    .mark::after {
+      width:132px;
+      height:132px;
+      right:-86px;
+      bottom:6px;
+      border-left-color:transparent;
+      border-top-color:transparent;
+      transform:rotate(-14deg);
+    }
+
+    .bills-logo-img {
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      position:relative;
+      z-index:1;
+      filter:drop-shadow(0 3px 4px rgba(0,0,0,.12));
+    }
+
     .eyebrow { text-transform:uppercase;letter-spacing:.16em;font-size:12px;opacity:.78;font-weight:800;margin-bottom:4px; }
     h1 { margin:0;font-size:clamp(28px,4.5vw,48px);line-height:.98;letter-spacing:-.035em; }
-    .subtitle { margin:8px 0 0;opacity:.85;font-size:14px; }
+    .subtitle {
+      margin:8px 0 0;
+      opacity:.92;
+      font-size:14px;
+      max-width:640px;
+    }
+
+    .eyebrow::after {
+      content:" ⚡";
+      color:#ffd34f;
+    }
+
+    .brand {
+      position:relative;
+    }
+
+    .brand::after {
+      content:"";
+      position:absolute;
+      left:12px;
+      top:-8px;
+      width:128px;
+      height:88px;
+      border:2px solid rgba(255,255,255,.10);
+      border-radius:50%;
+      border-right-color:transparent;
+      border-bottom-color:transparent;
+      transform:rotate(-10deg);
+      pointer-events:none;
+    }
     .season-pill {
       background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.22);
       padding:11px 16px;border-radius:999px;font-weight:800;backdrop-filter:blur(6px);
@@ -319,7 +407,7 @@
     }
     @media (max-width:580px) {
       .hero { padding-top:22px; }
-      .mark { width:54px;height:54px;font-size:28px; }
+      .mark { width:92px;height:66px;padding:5px 7px; }
       .control-group,.seller-group { width:100%; }
       .control-group select { flex:1;min-width:0; }
       .seller-count { width:100%;justify-content:center; }
@@ -340,14 +428,16 @@
   <header class="hero">
     <div class="hero-inner">
       <div class="brand">
-        <div class="mark">🏈</div>
+        <div class="mark">
+          <img src="buffalo-bills-logo-transparent.png" alt="Buffalo Bills logo" class="bills-logo-img">
+        </div>
         <div>
-          <div class="eyebrow">Amherst Lightning Football Pool</div>
-          <h1>BILLS FOOTBALL SQUARES</h1>
-          <p class="subtitle">Your square plays all season long.</p>
+          <div class="eyebrow">Amherst Lightning Softball Fundraiser</div>
+          <h1>BUFFALO BILLS SQUARES</h1>
+          <p class="subtitle">Season-long football squares with a little softball swagger.</p>
         </div>
       </div>
-      <div class="season-pill">2026 SEASON • 17 WEEKS</div>
+      <div class="season-pill">2026 SEASON • 17 WEEKS • LIGHTNING 12U</div>
     </div>
   </header>
 
@@ -412,6 +502,7 @@
             All non-requested positions were randomized. Patti Brzezinski is locked
             into square #16 and Sonya Williams is locked into square #74.
             Gracie's four buyer names can be filled in later without changing her square positions.
+            This fundraiser page is styled with a Buffalo football feel and Amherst Lightning softball energy.
           </p>
         </div>
       </aside>
