@@ -170,6 +170,146 @@
     .callout { background:linear-gradient(135deg,var(--bills-blue),#071d45);color:#fff;border:0; }
     .callout h3 { color:#fff; }
     .callout p { margin:0;font-size:12px;line-height:1.55;opacity:.86; }
+
+    .square { cursor:pointer; }
+
+    .modal-backdrop {
+      position:fixed;
+      inset:0;
+      background:rgba(5,15,35,.72);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:9999;
+    }
+
+    .modal-backdrop.open { display:flex; }
+
+    .modal {
+      width:min(720px,96vw);
+      max-height:88vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:20px;
+      box-shadow:0 24px 70px rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.4);
+    }
+
+    .modal-header {
+      position:sticky;
+      top:0;
+      z-index:2;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:16px;
+      padding:18px 20px;
+      background:linear-gradient(135deg,var(--bills-blue),#071d45);
+      color:#fff;
+      border-radius:20px 20px 0 0;
+    }
+
+    .modal-header h3 {
+      margin:0;
+      font-size:22px;
+    }
+
+    .modal-header p {
+      margin:5px 0 0;
+      font-size:12px;
+      opacity:.82;
+    }
+
+    .modal-close {
+      border:0;
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      width:36px;
+      height:36px;
+      border-radius:10px;
+      font-size:22px;
+      line-height:1;
+      cursor:pointer;
+      font-weight:800;
+    }
+
+    .season-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      padding:16px;
+    }
+
+    .week-card {
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:#fff;
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      align-items:center;
+      gap:10px;
+    }
+
+    .week-card.current {
+      border:3px solid var(--gold);
+      background:#fff9dc;
+      box-shadow:0 6px 18px rgba(246,195,68,.22);
+    }
+
+    .week-num {
+      min-width:52px;
+      height:34px;
+      border-radius:9px;
+      display:grid;
+      place-items:center;
+      background:var(--bills-blue);
+      color:#fff;
+      font-weight:950;
+      font-size:12px;
+    }
+
+    .week-matchup strong {
+      display:block;
+      font-size:12px;
+      color:var(--navy);
+    }
+
+    .week-matchup span {
+      display:block;
+      margin-top:2px;
+      color:var(--muted);
+      font-size:10px;
+    }
+
+    .number-pair {
+      display:flex;
+      gap:6px;
+      align-items:center;
+      white-space:nowrap;
+    }
+
+    .number-badge {
+      min-width:34px;
+      height:34px;
+      padding:0 8px;
+      border-radius:9px;
+      display:grid;
+      place-items:center;
+      color:#fff;
+      font-size:16px;
+      font-weight:950;
+    }
+
+    .number-badge.bills { background:var(--bills-blue); }
+
+    .bye-label {
+      color:var(--muted);
+      font-weight:900;
+      font-size:11px;
+    }
+
     footer { text-align:center;color:var(--muted);font-size:11px;padding-top:22px; }
 
     @media (max-width:860px) {
@@ -190,6 +330,8 @@
       }
       .square { font-size:8px; }
       .section-head { align-items:start;flex-direction:column; }
+      .season-grid { grid-template-columns:1fr; }
+      .modal { width:98vw; }
     }
   </style>
 </head>
@@ -274,6 +416,19 @@
         </div>
       </aside>
     </section>
+
+    <div class="modal-backdrop" id="squareModal" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-header">
+          <div>
+            <h3 id="modalTitle">Square Details</h3>
+            <p id="modalSubtitle"></p>
+          </div>
+          <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+        </div>
+        <div class="season-grid" id="seasonGrid"></div>
+      </div>
+    </div>
 
     <footer>Unofficial fan pool • Not affiliated with the Buffalo Bills or NFL</footer>
   </main>
@@ -409,6 +564,8 @@
           square.dataset.seller = a.seller;
           square.dataset.square = index + 1;
           square.dataset.buyer = a.buyer;
+          square.dataset.row = row;
+          square.dataset.col = col;
 
           if (a.seller === "TEAM") square.classList.add("team-square");
 
@@ -422,10 +579,87 @@
             square.title = `Square #${index + 1} • ${a.seller} • ${a.buyer}`;
           }
 
+          square.addEventListener("click", () => openSquareModal(square));
           board.appendChild(square);
         }
       }
     }
+
+    const squareModal = document.getElementById("squareModal");
+    const modalClose = document.getElementById("modalClose");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalSubtitle = document.getElementById("modalSubtitle");
+    const seasonGrid = document.getElementById("seasonGrid");
+
+    function openSquareModal(square) {
+      const row = Number(square.dataset.row);
+      const col = Number(square.dataset.col);
+      const squareNum = Number(square.dataset.square);
+      const buyer = square.dataset.buyer;
+      const seller = square.dataset.seller;
+      const currentWeek = getCurrentPoolWeek();
+
+      modalTitle.textContent = `Square #${squareNum} — ${buyer}`;
+      modalSubtitle.textContent =
+        seller === "TEAM" ? "Team square" : `Sold by ${seller}`;
+
+      seasonGrid.innerHTML = BILLS_SCHEDULE.map(game => {
+        const numbers = WEEKLY_NUMBERS.find(w => w.week === game.week);
+        const isCurrent = game.week === currentWeek;
+
+        if (game.bye) {
+          return `
+            <div class="week-card ${isCurrent ? "current" : ""}">
+              <div class="week-num">WK ${game.week}</div>
+              <div class="week-matchup">
+                <strong>BYE</strong>
+                <span>No game this week</span>
+              </div>
+              <div class="bye-label">—</div>
+            </div>
+          `;
+        }
+
+        const billsNumber = numbers.bills[col];
+        const opponentNumber = numbers.opponent[row];
+
+        return `
+          <div class="week-card ${isCurrent ? "current" : ""}">
+            <div class="week-num">WK ${game.week}</div>
+            <div class="week-matchup">
+              <strong>Bills ${game.label}</strong>
+              <span>${game.opponent}</span>
+            </div>
+            <div class="number-pair">
+              <span class="number-badge bills" title="Bills number">${billsNumber}</span>
+              <span class="number-badge" style="background:${game.color}" title="${game.opponent} number">${opponentNumber}</span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      squareModal.classList.add("open");
+      squareModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeSquareModal() {
+      squareModal.classList.remove("open");
+      squareModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    modalClose.addEventListener("click", closeSquareModal);
+
+    squareModal.addEventListener("click", (e) => {
+      if (e.target === squareModal) closeSquareModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && squareModal.classList.contains("open")) {
+        closeSquareModal();
+      }
+    });
 
     const sellerCount = document.getElementById("sellerCount");
     const sellerName = document.getElementById("sellerName");
