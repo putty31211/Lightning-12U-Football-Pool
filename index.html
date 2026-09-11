@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bills Football Squares</title>
+  <style>
+    :root {
+      --bills-blue:#00338D;
+      --bills-red:#C60C30;
+      --navy:#06162f;
+      --ice:#f4f7fb;
+      --white:#fff;
+      --ink:#12213a;
+      --muted:#6e7b91;
+      --line:#dce4ef;
+      --gold:#f6c344;
+      --shadow:0 10px 30px rgba(10,35,80,.12);
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--ink);
+      background:radial-gradient(circle at 15% 0%,rgba(0,51,141,.10),transparent 28rem),
+                 linear-gradient(180deg,#eef4fb 0%,#f8fafc 55%,#eef3f8 100%);
+      min-height:100vh;
+    }
+    .top-stripe { height:6px;background:linear-gradient(90deg,var(--bills-blue) 0 58%,var(--bills-red) 58% 100%); }
+    .hero {
+      position:relative;overflow:hidden;
+      background:linear-gradient(125deg,rgba(0,51,141,.98),rgba(3,31,81,.98));
+      color:#fff;padding:30px clamp(18px,5vw,56px) 28px;border-bottom:5px solid var(--bills-red);
+    }
+    .hero::after {
+      content:"";position:absolute;width:420px;height:420px;right:-120px;top:-190px;
+      border-radius:50%;border:55px solid rgba(255,255,255,.06);
+    }
+    .hero-inner {
+      position:relative;z-index:1;max-width:1180px;margin:0 auto;
+      display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+    }
+    .brand { display:flex;align-items:center;gap:16px; }
+    .mark {
+      width:66px;height:66px;border-radius:18px;display:grid;place-items:center;
+      background:#fff;box-shadow:0 8px 22px rgba(0,0,0,.18);color:var(--bills-blue);
+      font-size:34px;transform:rotate(-3deg);
+    }
+    .eyebrow { text-transform:uppercase;letter-spacing:.16em;font-size:12px;opacity:.78;font-weight:800;margin-bottom:4px; }
+    h1 { margin:0;font-size:clamp(28px,4.5vw,48px);line-height:.98;letter-spacing:-.035em; }
+    .subtitle { margin:8px 0 0;opacity:.85;font-size:14px; }
+    .season-pill {
+      background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.22);
+      padding:11px 16px;border-radius:999px;font-weight:800;backdrop-filter:blur(6px);
+    }
+    main { max-width:1180px;margin:0 auto;padding:24px clamp(14px,4vw,34px) 54px; }
+    .card {
+      background:rgba(255,255,255,.94);border:1px solid rgba(220,228,239,.95);
+      border-radius:18px;box-shadow:var(--shadow);
+    }
+    .controls { margin-bottom:14px; }
+    .picker {
+      padding:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+    }
+    .control-group { display:flex;align-items:center;gap:10px;flex-wrap:wrap; }
+    .seller-group { flex:1; }
+    label {
+      font-size:12px;text-transform:uppercase;letter-spacing:.1em;font-weight:900;color:var(--muted);
+    }
+    select {
+      min-width:210px;border:1px solid var(--line);border-radius:11px;background:#fff;
+      color:var(--ink);padding:10px 12px;font:inherit;font-weight:750;outline:none;
+    }
+    .seller-count {
+      display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:999px;
+      background:#fff7cf;color:#715500;border:1px solid #efd86e;font-size:11px;font-weight:900;
+    }
+    .status {
+      display:inline-flex;align-items:center;gap:7px;padding:8px 10px;border-radius:999px;
+      background:#eef7f1;color:#19713d;font-size:12px;font-weight:850;
+    }
+    .status::before { content:"";width:8px;height:8px;background:#2ba45a;border-radius:50%; }
+    .stats { display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px; }
+    .stat { padding:17px 18px;min-height:92px;position:relative;overflow:hidden; }
+    .stat-label { color:var(--muted);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:900; }
+    .stat-value { margin-top:5px;font-size:24px;font-weight:950;color:var(--bills-blue); }
+    .stat small { color:var(--muted);font-weight:650; }
+    .content-grid { display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:start; }
+    .board-card { padding:18px;overflow:hidden; }
+    .section-head { display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px; }
+    .section-head h2,.side-card h3 { margin:0;color:var(--navy); }
+    .section-head h2 { font-size:20px; }
+    .section-head p { margin:3px 0 0;color:var(--muted);font-size:12px; }
+    .legend { display:flex;gap:10px;font-size:11px;color:var(--muted);white-space:nowrap; }
+    .legend span { display:inline-flex;align-items:center;gap:5px; }
+    .dot { width:9px;height:9px;border-radius:50%; }
+    .dot.mine { background:var(--gold); }
+    .dot.team { background:var(--bills-blue); }
+    .board-wrap { overflow-x:auto;padding:2px 2px 8px; }
+    .board {
+      --cell:64px;display:grid;grid-template-columns:72px repeat(10,var(--cell));
+      grid-template-rows:42px repeat(10,var(--cell));width:max-content;min-width:100%;justify-content:center;
+    }
+    .corner,.col-head,.row-head,.square {
+      border-right:1px solid #cfd9e7;border-bottom:1px solid #cfd9e7;
+      display:grid;place-items:center;text-align:center;
+    }
+    .corner {
+      background:var(--navy);color:#fff;font-size:9px;font-weight:900;line-height:1.2;
+      border-radius:12px 0 0 0;padding:5px;
+    }
+    .col-head { background:var(--bills-blue); }
+    .row-head { background:var(--bills-red); }
+    .square {
+      background:#fff;position:relative;padding:12px 4px 4px;font-size:9px;font-weight:800;
+      min-width:var(--cell);line-height:1.15;transition:.15s ease;cursor:default;overflow:hidden;
+    }
+    .square:hover {
+      z-index:3;transform:scale(1.06);border:2px solid var(--bills-blue);
+      box-shadow:0 5px 16px rgba(0,51,141,.18);font-size:10px;
+    }
+    .square .num {
+      position:absolute;top:3px;right:4px;color:#9aa7b9;font-size:8px;font-weight:900;
+    }
+    .square.team-square {
+      background:#edf3ff;color:var(--bills-blue);
+      box-shadow:inset 0 0 0 1px rgba(0,51,141,.24);
+    }
+    .square.seller-match {
+      background:#fff2ad;box-shadow:inset 0 0 0 3px var(--gold);
+      color:#17213a;transform:scale(1.015);z-index:1;
+    }
+    .square.seller-dim { opacity:.22;filter:grayscale(.4); }
+    .square.seller-match::after {
+      content:"★";position:absolute;left:4px;top:2px;color:#c08b00;font-size:10px;
+    }
+    .side { display:grid;gap:14px; }
+    .side-card { padding:18px; }
+    .side-card h3 { font-size:16px;margin-bottom:12px; }
+    .payout-row,.mini-row {
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:10px 0;border-bottom:1px solid var(--line);
+    }
+    .payout-row:last-child,.mini-row:last-child { border-bottom:0; }
+    .payout-row span,.mini-row span { font-size:12px;color:var(--muted);font-weight:700; }
+    .payout-row strong { color:var(--bills-blue); }
+    .seller-feature {
+      display:flex;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line);
+    }
+    .seller-avatar {
+      width:46px;height:46px;border-radius:13px;display:grid;place-items:center;flex:0 0 auto;
+      background:linear-gradient(135deg,var(--bills-blue),#071d45);color:#fff;font-size:12px;
+      font-weight:950;letter-spacing:.04em;
+    }
+    .seller-feature span { color:var(--muted);font-size:11px;line-height:1.35; }
+    .seller-square-list { max-height:310px;overflow-y:auto;margin-top:5px; }
+    .square-chip {
+      display:flex;justify-content:space-between;align-items:center;gap:8px;
+      padding:9px 0;border-bottom:1px solid var(--line);font-size:11px;font-weight:800;
+    }
+    .square-chip:last-child { border-bottom:0; }
+    .buyer-name { color:var(--navy);text-align:right; }
+    .callout { background:linear-gradient(135deg,var(--bills-blue),#071d45);color:#fff;border:0; }
+    .callout h3 { color:#fff; }
+    .callout p { margin:0;font-size:12px;line-height:1.55;opacity:.86; }
+    footer { text-align:center;color:var(--muted);font-size:11px;padding-top:22px; }
+
+    @media (max-width:860px) {
+      .stats { grid-template-columns:repeat(2,1fr); }
+      .content-grid { grid-template-columns:1fr; }
+      .side { grid-template-columns:repeat(2,1fr); }
+      .callout { grid-column:1 / -1; }
+    }
+    @media (max-width:580px) {
+      .hero { padding-top:22px; }
+      .mark { width:54px;height:54px;font-size:28px; }
+      .control-group,.seller-group { width:100%; }
+      .control-group select { flex:1;min-width:0; }
+      .seller-count { width:100%;justify-content:center; }
+      .stats { gap:8px; }
+      .stat { padding:14px;min-height:82px; }
+      .stat-value { font-size:20px; }
+      .side { grid-template-columns:1fr; }
+      .board {
+        --cell:52px;grid-template-columns:58px repeat(10,var(--cell));
+        grid-template-rows:36px repeat(10,var(--cell));
+      }
+      .square { font-size:8px; }
+      .section-head { align-items:start;flex-direction:column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-stripe"></div>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="brand">
+        <div class="mark">🏈</div>
+        <div>
+          <div class="eyebrow">Amherst Lightning Football Pool</div>
+          <h1>BILLS FOOTBALL SQUARES</h1>
+          <p class="subtitle">Your square plays all season long.</p>
+        </div>
+      </div>
+      <div class="season-pill">2026 SEASON • 17 WEEKS</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="controls">
+      <div class="card picker">
+        <div class="control-group seller-group">
+          <label for="sellerSelect">Who sold you your square?</label>
+          <select id="sellerSelect"></select>
+          <span class="seller-count" id="sellerCount">Showing all 100 squares</span>
+        </div>
+        <span class="status">Board set</span>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="card stat">
+        <div class="stat-label">Squares</div>
+        <div class="stat-value">100</div>
+        <small>full board</small>
+      </div>
+      <div class="card stat">
+        <div class="stat-label">Sold Squares</div>
+        <div class="stat-value">92</div>
+        <small>including Gracie's 4 TBD buyers</small>
+      </div>
+      <div class="card stat">
+        <div class="stat-label">Team Squares</div>
+        <div class="stat-value">8</div>
+        <small>team-owned positions</small>
+      </div>
+      <div class="card stat">
+        <div class="stat-label">Fixed Requests</div>
+        <div class="stat-value">2</div>
+        <small>#16 Patti • #74 Sonya</small>
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <div class="card board-card">
+        <div class="section-head">
+          <div>
+            <h2>Season Board</h2>
+            <p>Square placement is set. Weekly outside numbers will be added later.</p>
+          </div>
+          <div class="legend">
+            <span><i class="dot mine"></i> Selected seller</span>
+            <span><i class="dot team"></i> Team square</span>
+          </div>
+        </div>
+        <div class="board-wrap">
+          <div class="board" id="board"></div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="card side-card">
+          <h3>Weekly Payouts</h3>
+          <div class="payout-row"><span>Halftime</span><strong>$100</strong></div>
+          <div class="payout-row"><span>Final</span><strong>$200</strong></div>
+          <div class="payout-row"><span>Total / Week</span><strong>$300</strong></div>
+        </div>
+
+        <div class="card side-card">
+          <h3>Selected Seller</h3>
+          <div class="seller-feature">
+            <div class="seller-avatar" id="sellerAvatar">ALL</div>
+            <div>
+              <strong id="sellerName">All Sellers</strong><br>
+              <span id="sellerSummary">Choose a girl above to highlight her squares.</span>
+            </div>
+          </div>
+          <div id="sellerSquareList" class="seller-square-list"></div>
+        </div>
+
+        <div class="card side-card callout">
+          <h3>Board Notes</h3>
+          <p>
+            All non-requested positions were randomized. Patti Brzezinski is locked
+            into square #16 and Sonya Williams is locked into square #74.
+            Gracie's four buyer names can be filled in later without changing her square positions.
+          </p>
+        </div>
+      </aside>
+    </section>
+
+    <footer>Unofficial fan pool • Not affiliated with the Buffalo Bills or NFL</footer>
+  </main>
+
+  <script>
+    const assignments = [{"seller": "Leelah", "buyer": "Heather Smith", "requested": null}, {"seller": "Ellie", "buyer": "Cindy Robinson", "requested": null}, {"seller": "Lila", "buyer": "Lindsey Toutounji", "requested": null}, {"seller": "Liv", "buyer": "John Romano", "requested": null}, {"seller": "Madison", "buyer": "Michelle Stuyvenberg", "requested": null}, {"seller": "Lana", "buyer": "Norm Petersdorf", "requested": null}, {"seller": "Madison", "buyer": "Bob Reagan", "requested": null}, {"seller": "Ellie", "buyer": "Rich and John", "requested": null}, {"seller": "Gracie", "buyer": "TBD", "requested": null}, {"seller": "Brigetta", "buyer": "Carmen Torres", "requested": null}, {"seller": "Ellie", "buyer": "Dave and Larry", "requested": null}, {"seller": "TEAM", "buyer": "TEAM", "requested": null}, {"seller": "Madison", "buyer": "Theresa Skowronski", "requested": null}, {"seller": "Lana", "buyer": "Norm Petersdorf", "requested": null}, {"seller": "Liv", "buyer": "Cathy Romano", "requested": null}, {"seller": "Kate", "buyer": "Patti Brzezinski", "requested": 16}, {"seller": "Ellie", "buyer": "Sara Temlitz", "requested": null}, {"seller": "Lila", "buyer": "Brynn Stroehlein", "requested": null}, {"seller": "Vanessa", "buyer": "Sandra Klimas", "requested": null}, {"seller": "Lana", "buyer": "Nick Nowakowski", "requested": null}, {"seller": "Brigetta", "buyer": "Wiliam Weir", "requested": null}, {"seller": "Gracie", "buyer": "TBD", "requested": null}, {"seller": "Liv", "buyer": "Viki Orton", "requested": null}, {"seller": "Lana", "buyer": "Amy Martis", "requested": null}, {"seller": "Paige", "buyer": "Julie F", "requested": null}, {"seller": "Emery", "buyer": "Kristin Yotter", "requested": null}, {"seller": "Brigetta", "buyer": "Robert Macek", "requested": null}, {"seller": "Paige", "buyer": "Jamielyn", "requested": null}, {"seller": "Kate", "buyer": "Kyle Hereth", "requested": null}, {"seller": "TEAM", "buyer": "TEAM", "requested": null}, {"seller": "Vanessa", "buyer": "David Hanewinckel", "requested": null}, {"seller": "Ellie", "buyer": "Terri Ryan", "requested": null}, {"seller": "Brigetta", "buyer": "LUGO", "requested": null}, {"seller": "Paige", "buyer": "Colleen S", "requested": null}, {"seller": "Leelah", "buyer": "Dawn Johnson", "requested": null}, {"seller": "Vanessa", "buyer": "Kristin Napoli", "requested": null}, {"seller": "Lana", "buyer": "Susan and Charlie Sobocinski", "requested": null}, {"seller": "Lila", "buyer": "Jill Matthews", "requested": null}, {"seller": "Kate", "buyer": "Joseph Brzezinski", "requested": null}, {"seller": "Brigetta", "buyer": "Jim Hall", "requested": null}, {"seller": "TEAM", "buyer": "TEAM", "requested": null}, {"seller": "Vanessa", "buyer": "Vanessa Napoli", "requested": null}, {"seller": "Kate", "buyer": "Kelly Polashenski", "requested": null}, {"seller": "Brigetta", "buyer": "Eric Yarwood", "requested": null}, {"seller": "Emery", "buyer": "Rob Gladwell", "requested": null}, {"seller": "Brigetta", "buyer": "Steve Tripodi", "requested": null}, {"seller": "Ellie", "buyer": "Katie and Julie", "requested": null}, {"seller": "Emery", "buyer": "Melissa Kusak", "requested": null}, {"seller": "Leelah", "buyer": "Paula Faulise", "requested": null}, {"seller": "Lana", "buyer": "Jeffery Wojcicki", "requested": null}, {"seller": "Kate", "buyer": "Andrew Polashenski", "requested": null}, {"seller": "Lila", "buyer": "Deb Taylor", "requested": null}, {"seller": "Ellie", "buyer": "Greg Ryan", "requested": null}, {"seller": "Emery", "buyer": "Linda Gladwell", "requested": null}, {"seller": "TEAM", "buyer": "TEAM", "requested": null}, {"seller": "Paige", "buyer": "Coach Jamie", "requested": null}, {"seller": "Kate", "buyer": "Mike Hereth", "requested": null}, {"seller": "Ellie", "buyer": "Dave Manthei", "requested": null}, {"seller": "Ellie", "buyer": "Karen Murray", "requested": null}, {"seller": "Ellie", "buyer": "Ellie Ryan", "requested": null}, {"seller": "Brigetta", "buyer": "Angie Leonard", "requested": null}, {"seller": "Gracie", "buyer": "TBD", "requested": null}, {"seller": "Gracie", "buyer": "TBD", "requested": null}, {"seller": "Lana", "buyer": "Jeremy Voorhees", "requested": null}, {"seller": "Madison", "buyer": "Dana Ford", "requested": null}, {"seller": "Emery", "buyer": "Barb Cipolla", "requested": null}, {"seller": "Paige", "buyer": "Tony S", "requested": null}, {"seller": "Madison", "buyer": "Kara Vaughn", "requested": null}, {"seller": "Lana", "buyer": "Lehde Haus", "requested": null}, {"seller": "TEAM", "buyer": "TEAM", "requested": null}, {"seller": "Vanessa", "buyer": "Jim Rizzo", "requested": null}, {"seller": "TEAM", "buyer": "TEAM", "requested": null}, {"seller": "Emery", "buyer": "Bob Gladwell", "requested": null}, {"seller": "Brigetta", "buyer": "Sonya Williams", "requested": 74}, {"seller": "TEAM", "buyer": "TEAM", "requested": null}, {"seller": "Madison", "buyer": "Austin Gailor", "requested": null}, {"seller": "Ellie", "buyer": "Dave Manthei", "requested": null}, {"seller": "TEAM", "buyer": "TEAM", "requested": null}, {"seller": "Ellie", "buyer": "Joyce", "requested": null}, {"seller": "Paige", "buyer": "Coach Tab", "requested": null}, {"seller": "Liv", "buyer": "Carrie Gutillo", "requested": null}, {"seller": "Liv", "buyer": "John Romano JR", "requested": null}, {"seller": "Paige", "buyer": "Michael", "requested": null}, {"seller": "Ellie", "buyer": "Nikki Ruhle", "requested": null}, {"seller": "Paige", "buyer": "Paige", "requested": null}, {"seller": "Madison", "buyer": "Nancy Lash", "requested": null}, {"seller": "Lila", "buyer": "Terri Wesoloski", "requested": null}, {"seller": "Vanessa", "buyer": "John Klimas", "requested": null}, {"seller": "Emery", "buyer": "Julie Evans", "requested": null}, {"seller": "Madison", "buyer": "Clayton Vaughn", "requested": null}, {"seller": "Madison", "buyer": "Caleb Higgins", "requested": null}, {"seller": "Emery", "buyer": "Mattie Sopczyk", "requested": null}, {"seller": "Madison", "buyer": "Jeremy Rising", "requested": null}, {"seller": "Brigetta", "buyer": "Dave Ball", "requested": null}, {"seller": "Paige", "buyer": "Declan (Dave F)", "requested": null}, {"seller": "Emery", "buyer": "Katie Gladwell", "requested": null}, {"seller": "Lila", "buyer": "Marcia Taylor", "requested": null}, {"seller": "Liv", "buyer": "Sandy Pennella", "requested": null}, {"seller": "Lana", "buyer": "Ben Bober", "requested": null}, {"seller": "Lila", "buyer": "Karen Hawthorn", "requested": null}];
+    const sellers = ["Liv", "Brigetta", "Kate", "Emery", "Leelah", "Lana", "Paige", "Vanessa", "Lila", "Madison", "Ellie", "Gracie"];
+
+    const sellerSelect = document.getElementById("sellerSelect");
+    sellerSelect.innerHTML =
+      `<option value="ALL">All Sellers</option>` +
+      sellers.map(s => `<option value="${s}">${s}</option>`).join("");
+
+    const board = document.getElementById("board");
+
+    const corner = document.createElement("div");
+    corner.className = "corner";
+    corner.innerHTML = "OPP<br>↓ &nbsp; BUF →";
+    board.appendChild(corner);
+
+    // Outside numbers intentionally blank for now.
+    for (let i = 0; i < 10; i++) {
+      const el = document.createElement("div");
+      el.className = "col-head";
+      board.appendChild(el);
+    }
+
+    for (let row = 0; row < 10; row++) {
+      const rowHead = document.createElement("div");
+      rowHead.className = "row-head";
+      board.appendChild(rowHead);
+
+      for (let col = 0; col < 10; col++) {
+        const index = row * 10 + col;
+        const a = assignments[index];
+        const square = document.createElement("div");
+        square.className = "square";
+        square.dataset.seller = a.seller;
+        square.dataset.square = index + 1;
+        square.dataset.buyer = a.buyer;
+
+        if (a.seller === "TEAM") square.classList.add("team-square");
+
+        const displayName = a.seller === "TEAM" ? "TEAM" : a.buyer;
+        square.innerHTML = `<span class="num">#${index + 1}</span>${displayName}`;
+        square.title = `Square #${index + 1} • ${a.seller} • ${a.buyer}`;
+        board.appendChild(square);
+      }
+    }
+
+    const sellerCount = document.getElementById("sellerCount");
+    const sellerName = document.getElementById("sellerName");
+    const sellerSummary = document.getElementById("sellerSummary");
+    const sellerAvatar = document.getElementById("sellerAvatar");
+    const sellerSquareList = document.getElementById("sellerSquareList");
+
+    function highlightSeller() {
+      const selected = sellerSelect.value;
+      const squares = [...document.querySelectorAll(".square")];
+
+      squares.forEach(square => {
+        square.classList.remove("seller-match", "seller-dim");
+      });
+
+      if (selected === "ALL") {
+        sellerCount.textContent = "Showing all 100 squares";
+        sellerName.textContent = "All Sellers";
+        sellerAvatar.textContent = "ALL";
+        sellerSummary.textContent = "Choose a girl above to highlight her squares.";
+        sellerSquareList.innerHTML = "";
+        return;
+      }
+
+      const matches = squares.filter(square => square.dataset.seller === selected);
+
+      squares.forEach(square => {
+        square.classList.add(
+          square.dataset.seller === selected ? "seller-match" : "seller-dim"
+        );
+      });
+
+      sellerCount.textContent = `${matches.length} square${matches.length === 1 ? "" : "s"} sold by ${selected}`;
+      sellerName.textContent = selected;
+      sellerAvatar.textContent = selected.substring(0, 2).toUpperCase();
+      sellerSummary.textContent = `These are all of ${selected}'s assigned squares.`;
+
+      sellerSquareList.innerHTML = matches
+        .sort((a,b) => Number(a.dataset.square) - Number(b.dataset.square))
+        .map(square => `
+          <div class="square-chip">
+            <span>Square #${square.dataset.square}</span>
+            <span class="buyer-name">${square.dataset.buyer}</span>
+          </div>
+        `).join("");
+    }
+
+    sellerSelect.addEventListener("change", highlightSeller);
+    highlightSeller();
+  </script>
+</body>
+</html>
