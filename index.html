@@ -28,81 +28,70 @@
     }
     .top-stripe { height:6px;background:linear-gradient(90deg,var(--bills-blue) 0 58%,var(--bills-red) 58% 100%); }
     .hero {
-      position:relative;overflow:hidden;
+      position:relative;
+      overflow:hidden;
       background:
-        radial-gradient(circle at 14% 24%, rgba(255,255,255,.08), transparent 13rem),
-        linear-gradient(125deg, rgba(0,51,141,.98), rgba(3,31,81,.98));
-      color:#fff;padding:30px clamp(18px,5vw,56px) 28px;border-bottom:5px solid var(--bills-red);
+        linear-gradient(90deg, rgba(0,51,141,.82), rgba(3,31,81,.70)),
+        url("Lightning%20Background.png");
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      color:#fff;
+      padding:30px clamp(18px,5vw,56px) 28px;
+      border-bottom:5px solid var(--bills-red);
     }
+
     .hero::before {
       content:"";
       position:absolute;
       inset:0;
       background:
-        radial-gradient(circle at 82% 28%, rgba(255,255,255,.08), transparent 11rem),
-        linear-gradient(115deg, transparent 0 74%, rgba(198,12,48,.20) 74% 78%, transparent 78% 100%);
+        linear-gradient(90deg, rgba(0,25,70,.20), transparent 45%, rgba(0,0,0,.12));
       pointer-events:none;
     }
+
     .hero::after {
-      content:"";position:absolute;width:420px;height:420px;right:-120px;top:-190px;
-      border-radius:50%;border:55px solid rgba(255,255,255,.06);
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.05), transparent 16rem);
+      pointer-events:none;
     }
+
     .hero-inner {
       position:relative;z-index:1;max-width:1180px;margin:0 auto;
       display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
     }
     .brand { display:flex;align-items:center;gap:16px; }
     .mark {
-      width:116px;
-      height:82px;
+      width:132px;
+      height:88px;
       border-radius:18px;
-      display:grid;
-      place-items:center;
-      background:rgba(255,255,255,.96);
+      display:block;
+      background:transparent;
       box-shadow:0 8px 22px rgba(0,0,0,.18);
       transform:rotate(-2deg);
       position:relative;
       overflow:hidden;
-      border:1px solid rgba(255,255,255,.7);
-      padding:7px 9px;
+      border:2px solid rgba(255,255,255,.82);
+      padding:0;
+      flex:0 0 auto;
     }
 
     .mark::before,
     .mark::after {
-      content:"";
-      position:absolute;
-      border:2px solid rgba(198,12,48,.22);
-      border-radius:50%;
-      pointer-events:none;
-    }
-
-    .mark::before {
-      width:132px;
-      height:132px;
-      left:-86px;
-      top:10px;
-      border-right-color:transparent;
-      border-bottom-color:transparent;
-      transform:rotate(-14deg);
-    }
-
-    .mark::after {
-      width:132px;
-      height:132px;
-      right:-86px;
-      bottom:6px;
-      border-left-color:transparent;
-      border-top-color:transparent;
-      transform:rotate(-14deg);
+      display:none;
+      content:none;
     }
 
     .bills-logo-img {
       width:100%;
       height:100%;
-      object-fit:contain;
-      position:relative;
-      z-index:1;
-      filter:drop-shadow(0 3px 4px rgba(0,0,0,.12));
+      display:block;
+      object-fit:cover;
+      object-position:center;
+      filter:none;
     }
 
     .eyebrow { text-transform:uppercase;letter-spacing:.16em;font-size:12px;opacity:.78;font-weight:800;margin-bottom:4px; }
@@ -407,7 +396,7 @@
     }
     @media (max-width:580px) {
       .hero { padding-top:22px; }
-      .mark { width:92px;height:66px;padding:5px 7px; }
+      .mark { width:102px;height:72px;padding:0; }
       .control-group,.seller-group { width:100%; }
       .control-group select { flex:1;min-width:0; }
       .seller-count { width:100%;justify-content:center; }
@@ -429,7 +418,7 @@
     <div class="hero-inner">
       <div class="brand">
         <div class="mark">
-          <img src="buffalo-bills-logo-transparent.png" alt="Buffalo Bills logo" class="bills-logo-img">
+          <img src="Softball_Bills.png" alt="Buffalo Bills logo" class="bills-logo-img">
         </div>
         <div>
           <div class="eyebrow">Amherst Lightning Softball Fundraiser</div>
@@ -464,7 +453,6 @@
         <div class="section-head">
           <div>
             <h2 id="boardTitle">Week 1 Board</h2>
-            <p>Square placement is set. Weekly outside numbers will be added later.</p>
           </div>
           <div class="legend">
             <span><i class="dot mine"></i> Selected seller</span>
@@ -497,12 +485,12 @@
         </div>
 
         <div class="card side-card callout">
-          <h3>Board Notes</h3>
+          <h3>How to Use the Board</h3>
           <p>
-            All non-requested positions were randomized. Patti Brzezinski is locked
-            into square #16 and Sonya Williams is locked into square #74.
-            Gracie's four buyer names can be filled in later without changing her square positions.
-            This fundraiser page is styled with a Buffalo football feel and Amherst Lightning softball energy.
+            Choose the girl who sold you your square to highlight her entries.
+            Tap any square to see that square's Bills and opponent numbers for the full season.
+            Bills numbers are always across the top and opponent numbers run down the left.
+            Weekly payouts are $100 at halftime and $200 for the final score.
           </p>
         </div>
       </aside>
